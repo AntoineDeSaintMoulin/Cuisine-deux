@@ -9,6 +9,8 @@ import { ShoppingTab } from './components/shopping/ShoppingTab';
 import { CalendarTab } from './components/calendar/CalendarTab';
 import { RecipesTab } from './components/recipes/RecipesTab';
 
+// test de déploiement antoine
+
 export default function App() {
   const [currentTab, setCurrentTab] = useState<TabType>('courses');
   const [isSupabaseModalOpen, setIsSupabaseModalOpen] = useState(false);
