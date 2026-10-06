@@ -8,8 +8,8 @@ export function getSupabaseCredentials(): { url: string; anonKey: string } {
   const localUrl = typeof window !== 'undefined' ? localStorage.getItem(STORAGE_KEY_URL) : null;
   const localAnon = typeof window !== 'undefined' ? localStorage.getItem(STORAGE_KEY_ANON) : null;
 
-  const url = (localUrl || import.meta.env.VITE_SUPABASE_URL || '').trim();
-  const anonKey = (localAnon || import.meta.env.VITE_SUPABASE_ANON_KEY || '').trim();
+  const url = (localUrl || import.meta.env.VITE_SUPABASE_URL || 'https://pugqzblogoruswyiwdei.supabase.co').trim();
+  const anonKey = (localAnon || import.meta.env.VITE_SUPABASE_ANON_KEY || 'sb_publishable_ZksfBQ39vlcyGiWDKUl6YA_Rsskucfe').trim();
 
   return { url, anonKey };
 }
