@@ -1,0 +1,5 @@
+{
+  "name": "À Deux en Cuisine",
+  "description": "Application collaborative de gestion des courses, repas et recettes pour couple avec synchronisation en temps réel et mode hors-ligne.",
+  "requestFramePermissions": []
+}

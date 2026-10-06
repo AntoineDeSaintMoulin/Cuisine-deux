@@ -1,0 +1,54 @@
+@import "tailwindcss";
+
+@theme {
+  --breakpoint-xs: 22rem;
+  --font-serif: "Lora", Georgia, serif;
+  --font-sans: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+  --color-cream: #FBF6EE;
+  --color-cream-card: #FFFDF9;
+  --color-terracotta: #C65D3B;
+  --color-terracotta-dark: #AF4F30;
+  --color-terracotta-light: #F9EDE8;
+  --color-sage: #7A8B69;
+  --color-sage-dark: #627252;
+  --color-sage-light: #EFF3ED;
+  --color-warm-brown: #3E2C23;
+  --color-warm-muted: #7E6F65;
+  --color-warm-border: #E8DDD2;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-cream);
+  color: var(--color-warm-brown);
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior-y: none;
+}
+
+h1, h2, h3, .font-serif {
+  font-family: var(--font-serif);
+}
+
+/* Custom subtle scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #D8C8B8;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #C65D3B;
+}
+
+/* Safe area padding for mobile notch and navigation pill */
+.safe-pb {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+}
+.safe-pt {
+  padding-top: max(1rem, env(safe-area-inset-top));
+}

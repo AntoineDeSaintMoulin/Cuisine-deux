@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FBF6EE"/>
+      <stop offset="100%" stop-color="#F2E8DC"/>
+    </linearGradient>
+    <linearGradient id="terra" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#D96F4D"/>
+      <stop offset="100%" stop-color="#C65D3B"/>
+    </linearGradient>
+    <linearGradient id="sage" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8FA27C"/>
+      <stop offset="100%" stop-color="#7A8B69"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background rounded canvas -->
+  <rect width="512" height="512" rx="128" fill="url(#bg)"/>
+  
+  <!-- Subtle inner border -->
+  <rect x="16" y="16" width="480" height="480" rx="112" fill="none" stroke="#E5D7C7" stroke-width="4"/>
+
+  <!-- Steam curves -->
+  <path d="M210 120 C200 95 220 80 210 60" fill="none" stroke="#D96F4D" stroke-width="8" stroke-linecap="round" opacity="0.7"/>
+  <path d="M256 110 C246 85 266 70 256 50" fill="none" stroke="#7A8B69" stroke-width="8" stroke-linecap="round" opacity="0.8"/>
+  <path d="M302 120 C292 95 312 80 302 60" fill="none" stroke="#D96F4D" stroke-width="8" stroke-linecap="round" opacity="0.7"/>
+
+  <!-- Cocotte / Casserole lid -->
+  <circle cx="256" cy="146" r="16" fill="#3E2C23"/>
+  <path d="M144 186 C160 160 352 160 368 186 Z" fill="url(#terra)"/>
+  <rect x="136" y="184" width="240" height="12" rx="6" fill="#3E2C23"/>
+
+  <!-- Casserole main body -->
+  <path d="M146 196 L164 330 C168 360 196 384 256 384 C316 384 344 360 348 330 L366 196 Z" fill="url(#terra)"/>
+
+  <!-- Handles -->
+  <path d="M136 210 C108 210 108 250 138 250" fill="none" stroke="#3E2C23" stroke-width="12" stroke-linecap="round"/>
+  <path d="M376 210 C404 210 404 250 374 250" fill="none" stroke="#3E2C23" stroke-width="12" stroke-linecap="round"/>
+
+  <!-- Shopping leaf / rosemary herb accent on the pot -->
+  <path d="M256 295 C235 270 220 230 256 215 C292 230 277 270 256 295 Z" fill="#FFFDF9" opacity="0.95"/>
+  <path d="M256 220 L256 290" stroke="#7A8B69" stroke-width="4" stroke-linecap="round"/>
+  
+  <!-- Tiny heart for couple in center -->
+  <path d="M256 340 C256 340 240 326 240 315 C240 307 246 302 253 303 C256 307 256 307 256 307 C256 307 256 307 259 303 C266 302 272 307 272 315 C272 326 256 340 256 340 Z" fill="#F8EDE8"/>
+</svg>
