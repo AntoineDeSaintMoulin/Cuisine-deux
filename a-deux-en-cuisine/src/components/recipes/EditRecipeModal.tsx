@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, Plus, Trash2, Check, Tag, Tags, Settings2 } from 'lucide-react';
 import { Recipe, RecipeIngredient, Aisle } from '../../types';
 import { useRecipeOptions } from '../../lib/recipeOptions';
+import { IngredientNameInput } from './IngredientNameInput';
 import { useAisles, defaultAisle, withCurrent } from '../../lib/aisles';
 
 interface IngredientRow {
@@ -319,10 +320,14 @@ export const EditRecipeModal: React.FC<EditRecipeModalProps> = ({
                   </span>
 
                   {/* Name */}
-                  <input
-                    type="text"
+                  <IngredientNameInput
                     value={row.name}
-                    onChange={(e) => updateIngredient(row.id, 'name', e.target.value)}
+                    onChange={(value) => updateIngredient(row.id, 'name', value)}
+                    onPick={(ing) =>
+                      setIngredients((prev) =>
+                        prev.map((r) => (r.id === row.id ? { ...r, name: ing.name, aisle: ing.aisle } : r))
+                      )
+                    }
                     placeholder="Nom (ex: Saumon, Farine...)"
                     className="flex-1 w-full px-2.5 py-1.5 text-xs rounded-lg border border-[#E8DDD2] focus:outline-none focus:ring-1 focus:ring-[#C65D3B]"
                   />
