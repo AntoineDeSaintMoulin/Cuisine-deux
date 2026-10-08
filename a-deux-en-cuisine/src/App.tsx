@@ -12,6 +12,7 @@ import { ManageCategoriesModal } from './components/shopping/ManageCategoriesMod
 import { AislesProvider } from './lib/aisles';
 import { RecipeOptionsProvider } from './lib/recipeOptions';
 import { useTags } from './hooks/useTags';
+import { buildKnownIngredients } from './components/recipes/IngredientNameInput';
 
 // test de déploiement antoine
 
@@ -71,7 +72,7 @@ export default function App() {
   return (
     <AislesProvider aisles={aisleNames}>
     <RecipeOptionsProvider
-      value={{ tagNames, tagsTableMissing, addTag, deleteTag, tagUsage, openCategories: () => setIsCategoriesOpen(true) }}
+      value={{ tagNames, tagsTableMissing, addTag, deleteTag, tagUsage, openCategories: () => setIsCategoriesOpen(true), knownIngredients: buildKnownIngredients(recipes, shoppingItems) }}
     >
     <div className="min-h-screen bg-[#FBF6EE] text-[#3E2C23] flex flex-col selection:bg-[#C65D3B]/20 selection:text-[#C65D3B]">
       {/* Top Header */}
