@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
-import { Plus, Check, Trash2, ShoppingBasket, Edit2, Sparkles, ChevronDown } from 'lucide-react';
+import { Plus, Check, Trash2, ShoppingBasket, Edit2, Sparkles, ChevronDown, Tags } from 'lucide-react';
 import { ShoppingItem, Aisle, Recipe } from '../../types';
-import { AISLES } from '../../lib/constants';
+import { useAisles, groupByAisle, defaultAisle, withCurrent } from '../../lib/aisles';
 import { AddShoppingItemModal } from './AddShoppingItemModal';
 import { ClearCheckedConfirmModal } from './ClearCheckedConfirmModal';
 
@@ -14,6 +14,7 @@ interface ShoppingTabProps {
   onDeleteItem: (id: string) => void;
   onClearChecked: () => void;
   onSwitchToCalendar: () => void;
+  onOpenCategories: () => void;
 }
 
 export const ShoppingTab: React.FC<ShoppingTabProps> = ({
@@ -25,7 +26,9 @@ export const ShoppingTab: React.FC<ShoppingTabProps> = ({
   onDeleteItem,
   onClearChecked,
   onSwitchToCalendar,
+  onOpenCategories,
 }) => {
+  const aisles = useAisles();
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<ShoppingItem | null>(null);
   const [selectedAisleForAdd, setSelectedAisleForAdd] = useState<Aisle | undefined>(undefined);
@@ -33,7 +36,9 @@ export const ShoppingTab: React.FC<ShoppingTabProps> = ({
 
   // Quick inline add state
   const [quickName, setQuickName] = useState('');
-  const [quickAisle, setQuickAisle] = useState<Aisle>('Fruits & légumes');
+  const [quickAisleChoice, setQuickAisle] = useState<Aisle | null>(null);
+  // Si la catégorie choisie a été supprimée entre-temps, on revient à la première
+  const quickAisle: Aisle = quickAisleChoice && aisles.includes(quickAisleChoice) ? quickAisleChoice : defaultAisle(aisles);
 
   const recipeMap = useMemo(() => {
     const map = new Map<string, string>();
@@ -43,24 +48,14 @@ export const ShoppingTab: React.FC<ShoppingTabProps> = ({
     return map;
   }, [recipes]);
 
-  // Group items by aisle according to the fixed order
+  // Articles regroupés par catégorie, dans l'ordre choisi par l'utilisateur
   const groupedItems = useMemo(() => {
-    const groups: { aisle: Aisle; items: ShoppingItem[] }[] = [];
-
-    for (const aisle of AISLES) {
-      const aisleItems = items.filter((item) => item.aisle === aisle);
-      if (aisleItems.length > 0) {
-        // Sort: unchecked first, checked at the bottom
-        const sorted = [...aisleItems].sort((a, b) => {
-          if (a.checked === b.checked) return 0;
-          return a.checked ? 1 : -1;
-        });
-        groups.push({ aisle, items: sorted });
-      }
-    }
-
-    return groups;
-  }, [items]);
+    return groupByAisle(items, aisles).map(({ aisle, items: aisleItems }) => ({
+      aisle,
+      // non cochés d'abord, cochés en bas
+      items: [...aisleItems].sort((a, b) => (a.checked === b.checked ? 0 : a.checked ? 1 : -1)),
+    }));
+  }, [items, aisles]);
 
   const checkedCount = useMemo(() => items.filter((i) => i.checked).length, [items]);
   const uncheckedCount = items.length - checkedCount;
@@ -98,16 +93,25 @@ export const ShoppingTab: React.FC<ShoppingTabProps> = ({
           </p>
         </div>
 
+        <div className="flex items-center gap-2 shrink-0">
+        <button
+          onClick={onOpenCategories}
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#FFFDF9] border border-[#E8DDD2] hover:bg-[#FBF6EE] text-[#3E2C23] text-xs font-semibold transition active:scale-95"
+          title="Gérer les catégories d'aliments"
+        >
+          <Tags className="w-3.5 h-3.5 text-[#7A8B69]" />
+          <span>Catégories</span>
+        </button>
         {checkedCount > 0 && (
           <button
             onClick={() => setIsClearModalOpen(true)}
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#E8DDD2]/60 hover:bg-[#E8DDD2] text-[#3E2C23] text-xs font-semibold transition active:scale-95"
           >
             <Trash2 className="w-3.5 h-3.5 text-[#C65D3B]" />
-            <span>Vider cochés ({checkedCount})</span>
+            <span>Vider ({checkedCount})</span>
           </button>
         )}
-      </div>
+        </div>
 
       {/* Quick Add Bar */}
       <form
@@ -130,7 +134,7 @@ export const ShoppingTab: React.FC<ShoppingTabProps> = ({
             onChange={(e) => setQuickAisle(e.target.value as Aisle)}
             className="text-xs bg-[#FBF6EE] border border-[#E8DDD2] rounded-xl px-2.5 py-2 text-[#3E2C23] focus:outline-none focus:ring-1 focus:ring-[#C65D3B]"
           >
-            {AISLES.map((a) => (
+            {withCurrent(aisles, quickAisle).map((a) => (
               <option key={a} value={a}>
                 {a}
               </option>
