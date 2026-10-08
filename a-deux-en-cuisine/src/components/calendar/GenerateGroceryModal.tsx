@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { X, Check, ShoppingBasket, CheckSquare, Square } from 'lucide-react';
 import { RecipeIngredient, ShoppingItem, Aisle } from '../../types';
 import { consolidateIngredients, ingredientKey } from '../../lib/utils';
-import { AISLES } from '../../lib/constants';
+import { useAisles, groupByAisle } from '../../lib/aisles';
 
 interface GenerateGroceryModalProps {
   isOpen: boolean;
@@ -26,6 +26,7 @@ export const GenerateGroceryModal: React.FC<GenerateGroceryModalProps> = ({
   onConfirmAdd,
   existingItems = [],
 }) => {
+  const aisles = useAisles();
   const consolidated = useMemo(() => consolidateIngredients(ingredients), [ingredients]);
 
   // Articles déjà présents (non cochés) dans la liste de courses
@@ -97,10 +98,7 @@ export const GenerateGroceryModal: React.FC<GenerateGroceryModalProps> = ({
   };
 
   // Group consolidated ingredients by aisle
-  const groupedByAisle = AISLES.map((aisle) => ({
-    aisle,
-    items: consolidated.filter((i) => i.aisle === aisle),
-  })).filter((group) => group.items.length > 0);
+  const groupedByAisle = groupByAisle(consolidated, aisles);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/45 backdrop-blur-xs">
