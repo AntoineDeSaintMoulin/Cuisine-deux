@@ -299,14 +299,6 @@ export const EditRecipeModal: React.FC<EditRecipeModalProps> = ({
                   Catégories
                 </button>
               </div>
-              <button
-                type="button"
-                onClick={addIngredientRow}
-                className="text-xs text-[#C65D3B] font-semibold flex items-center gap-1 hover:underline"
-              >
-                <Plus className="w-3.5 h-3.5" />
-                <span>Ajouter un ingrédient</span>
-              </button>
             </div>
 
             <div className="space-y-2">
@@ -377,6 +369,16 @@ export const EditRecipeModal: React.FC<EditRecipeModalProps> = ({
                 </div>
               ))}
             </div>
+
+            {/* Bouton sous le dernier ingrédient, pour ne pas devoir remonter */}
+            <button
+              type="button"
+              onClick={addIngredientRow}
+              className="mt-2 w-full py-2.5 rounded-xl border border-dashed border-[#C65D3B]/50 text-xs text-[#C65D3B] font-semibold flex items-center justify-center gap-1.5 hover:bg-[#F9EDE8] transition"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span>Ajouter un ingrédient</span>
+            </button>
           </div>
 
           {/* Instructions */}
