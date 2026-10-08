@@ -112,6 +112,7 @@ export const ShoppingTab: React.FC<ShoppingTabProps> = ({
           </button>
         )}
         </div>
+      </div>
 
       {/* Quick Add Bar */}
       <form
