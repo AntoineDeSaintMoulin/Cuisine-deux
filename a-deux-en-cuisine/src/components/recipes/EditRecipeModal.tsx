@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { X, Plus, Trash2, Check, Tag } from 'lucide-react';
+import { X, Plus, Trash2, Check, Tag, Tags, Settings2 } from 'lucide-react';
 import { Recipe, RecipeIngredient, Aisle } from '../../types';
-import { SUGGESTED_TAGS } from '../../lib/constants';
+import { useRecipeOptions } from '../../lib/recipeOptions';
 import { useAisles, defaultAisle, withCurrent } from '../../lib/aisles';
 
 interface IngredientRow {
@@ -35,7 +35,10 @@ export const EditRecipeModal: React.FC<EditRecipeModalProps> = ({
   const [ingredients, setIngredients] = useState<IngredientRow[]>([]);
   const [error, setError] = useState('');
   const aisles = useAisles();
-
+  const { tagNames, addTag, deleteTag, tagUsage, tagsTableMissing, openCategories } = useRecipeOptions();
+  const [manageTags, setManageTags] = useState(false);
+  const [tagToDelete, setTagToDelete] = useState<string | null>(null);
+  
   useEffect(() => {
     if (editingRecipe) {
       setName(editingRecipe.name);
@@ -71,13 +74,16 @@ export const EditRecipeModal: React.FC<EditRecipeModalProps> = ({
     );
   };
 
-  const handleAddCustomTag = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleAddCustomTag = (e?: { preventDefault: () => void }) => {
+    e?.preventDefault();
     const clean = customTagInput.trim();
-    if (clean && !tags.includes(clean)) {
-      setTags((prev) => [...prev, clean]);
-      setCustomTagInput('');
-    }
+    if (!clean) return;
+    // Le tag est ajouté à la liste commune (disponible pour toutes les recettes) et coché ici
+    const existing = tagNames.find((t) => t.toLowerCase() === clean.toLowerCase());
+    if (!existing) addTag(clean);
+    const name = existing ?? clean;
+    if (!tags.includes(name)) setTags((prev) => [...prev, name]);
+    setCustomTagInput('');
   };
 
   const addIngredientRow = () => {
@@ -167,56 +173,108 @@ export const EditRecipeModal: React.FC<EditRecipeModalProps> = ({
 
           {/* Tags */}
           <div>
-            <label className="block text-xs font-semibold text-[#3E2C23] mb-1.5">
-              Tags & catégories
-            </label>
-            <div className="flex flex-wrap gap-1.5 mb-2.5">
-              {SUGGESTED_TAGS.map((tag) => {
-                const isSelected = tags.includes(tag);
-                return (
-                  <button
-                    key={tag}
-                    type="button"
-                    onClick={() => toggleTag(tag)}
-                    className={`px-2.5 py-1 rounded-full text-xs font-medium border transition ${
-                      isSelected
-                        ? 'bg-[#C65D3B] text-white border-[#C65D3B]'
-                        : 'bg-[#FBF6EE] text-[#7E6F65] border-[#E8DDD2] hover:bg-[#E8DDD2]'
-                    }`}
-                  >
-                    {tag}
-                  </button>
-                );
-              })}
-              {/* Show custom tags added by user */}
-              {tags
-                .filter((t) => !(SUGGESTED_TAGS as readonly string[]).includes(t))
-                .map((customTag) => (
-                  <button
-                    key={customTag}
-                    type="button"
-                    onClick={() => toggleTag(customTag)}
-                    className="px-2.5 py-1 rounded-full text-xs font-medium bg-[#7A8B69] text-white border border-[#7A8B69]"
-                  >
-                    {customTag} ✕
-                  </button>
-                ))}
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="text-xs font-semibold text-[#3E2C23]">Tags</label>
+              <button
+                type="button"
+                onClick={() => {
+                  setManageTags((v) => !v);
+                  setTagToDelete(null);
+                }}
+                className="text-[11px] text-[#7A8B69] font-semibold flex items-center gap-1 hover:underline"
+              >
+                <Settings2 className="w-3.5 h-3.5" />
+                {manageTags ? 'Terminé' : 'Gérer les tags'}
+              </button>
             </div>
 
-            {/* Custom tag input */}
+            {manageTags && (
+              <p className="text-[11px] text-[#7E6F65] mb-2">
+                Touchez ✕ pour supprimer un tag de la liste et de toutes les recettes.
+                {tagsTableMissing && ' (Relancez le script SQL de Supabase pour enregistrer vos tags.)'}
+              </p>
+            )}
+
+            {tagToDelete && (
+              <div className="mb-2.5 p-2.5 rounded-xl border border-red-200 bg-red-50/60 text-xs space-y-2">
+                <p className="text-[#3E2C23]">
+                  Supprimer le tag <strong>« {tagToDelete} »</strong> ?
+                  {tagUsage(tagToDelete) > 0 &&
+                    ` Il sera retiré de ${tagUsage(tagToDelete)} recette${tagUsage(tagToDelete) > 1 ? 's' : ''}.`}
+                </p>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setTagToDelete(null)}
+                    className="flex-1 py-1.5 rounded-lg border border-[#E8DDD2] bg-white font-semibold text-[#7E6F65]"
+                  >
+                    Annuler
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      deleteTag(tagToDelete);
+                      setTags((prev) => prev.filter((t) => t !== tagToDelete));
+                      setTagToDelete(null);
+                    }}
+                    className="flex-1 py-1.5 rounded-lg bg-red-600 text-white font-semibold"
+                  >
+                    Supprimer
+                  </button>
+                </div>
+              </div>
+            )}
+
+            <div className="flex flex-wrap gap-1.5 mb-2.5">
+              {[...tagNames, ...tags.filter((t) => !tagNames.includes(t))].map((tag) => {
+                const isSelected = tags.includes(tag);
+                return (
+                  <span key={tag} className="inline-flex">
+                    <button
+                      type="button"
+                      onClick={() => toggleTag(tag)}
+                      className={`px-2.5 py-1 text-xs font-medium border transition ${
+                        manageTags ? 'rounded-l-full' : 'rounded-full'
+                      } ${
+                        isSelected
+                          ? 'bg-[#C65D3B] text-white border-[#C65D3B]'
+                          : 'bg-[#FBF6EE] text-[#7E6F65] border-[#E8DDD2] hover:bg-[#E8DDD2]'
+                      }`}
+                    >
+                      {tag}
+                    </button>
+                    {manageTags && (
+                      <button
+                        type="button"
+                        onClick={() => setTagToDelete(tag)}
+                        aria-label={`Supprimer le tag ${tag}`}
+                        className="px-2 py-1 rounded-r-full text-xs border border-l-0 border-red-200 bg-white text-red-600 hover:bg-red-50"
+                      >
+                        ✕
+                      </button>
+                    )}
+                  </span>
+                );
+              })}
+            </div>
+
+            {/* Nouveau tag (ajouté à la liste commune) */}
             <div className="flex gap-2">
               <input
                 type="text"
                 value={customTagInput}
                 onChange={(e) => setCustomTagInput(e.target.value)}
-                placeholder="Créer un nouveau tag..."
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') handleAddCustomTag(e);
+                }}
+                placeholder="Nouveau tag (ex : Apéro, Pâtes, Soupe…)"
                 className="flex-1 px-3 py-1.5 text-xs rounded-xl bg-white border border-[#E8DDD2] focus:outline-none focus:ring-1 focus:ring-[#C65D3B]"
               />
               <button
                 type="button"
                 onClick={handleAddCustomTag}
                 disabled={!customTagInput.trim()}
-                className="px-3 py-1.5 rounded-xl bg-[#FBF6EE] border border-[#E8DDD2] text-[#3E2C23] font-semibold hover:bg-[#E8DDD2] disabled:opacity-40"
+                className="px-3 py-1.5 rounded-xl bg-[#FBF6EE] border border-[#E8DDD2] text-[#3E2C23] text-xs font-semibold hover:bg-[#E8DDD2] disabled:opacity-40"
               >
                 + Ajouter
               </button>
@@ -226,9 +284,20 @@ export const EditRecipeModal: React.FC<EditRecipeModalProps> = ({
           {/* Structured Ingredients */}
           <div>
             <div className="flex items-center justify-between mb-2">
-              <label className="text-xs font-semibold text-[#3E2C23]">
-                Ingrédients nécessaires
-              </label>
+              <div className="flex items-center gap-2">
+                <label className="text-xs font-semibold text-[#3E2C23]">
+                  Ingrédients
+                </label>
+                <button
+                  type="button"
+                  onClick={openCategories}
+                  className="text-[11px] text-[#7A8B69] font-semibold flex items-center gap-1 hover:underline"
+                  title="Ajouter, renommer ou réordonner les catégories d'aliments"
+                >
+                  <Tags className="w-3.5 h-3.5" />
+                  Catégories
+                </button>
+              </div>
               <button
                 type="button"
                 onClick={addIngredientRow}
