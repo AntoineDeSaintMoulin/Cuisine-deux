@@ -10,6 +10,8 @@ import { CalendarTab } from './components/calendar/CalendarTab';
 import { RecipesTab } from './components/recipes/RecipesTab';
 import { ManageCategoriesModal } from './components/shopping/ManageCategoriesModal';
 import { AislesProvider } from './lib/aisles';
+import { RecipeOptionsProvider } from './lib/recipeOptions';
+import { useTags } from './hooks/useTags';
 
 // test de déploiement antoine
 
@@ -38,6 +40,8 @@ export default function App() {
     pendingCount,
     lastSyncTime,
     reloadFromSupabase,
+    persist,
+    setRecipes,
     addShoppingItem,
     addMultipleShoppingItems,
     toggleShoppingItem,
@@ -53,6 +57,9 @@ export default function App() {
     deleteRecipe,
   } = useData();
 
+  // Tags des recettes (liste commune gérée depuis l'éditeur de recette)
+  const { tagNames, tagsTableMissing, addTag, deleteTag, tagUsage } = useTags({ recipes, setRecipes, persist, isOnline });
+
   // Unchecked items count for bottom nav badge
   const uncheckedShoppingCount = shoppingItems.filter((i) => !i.checked).length;
 
@@ -63,6 +70,9 @@ export default function App() {
 
   return (
     <AislesProvider aisles={aisleNames}>
+    <RecipeOptionsProvider
+      value={{ tagNames, tagsTableMissing, addTag, deleteTag, tagUsage, openCategories: () => setIsCategoriesOpen(true) }}
+    >
     <div className="min-h-screen bg-[#FBF6EE] text-[#3E2C23] flex flex-col selection:bg-[#C65D3B]/20 selection:text-[#C65D3B]">
       {/* Top Header */}
       <Header
@@ -160,6 +170,7 @@ export default function App() {
         shoppingItemsCount={uncheckedShoppingCount}
       />
     </div>
+    </RecipeOptionsProvider>
     </AislesProvider>
   );
 }
