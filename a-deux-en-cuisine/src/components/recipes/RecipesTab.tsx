@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Search, Plus, Sparkles, Clock, Flame, BookHeart, ChefHat, Tag, X } from 'lucide-react';
 import { Recipe, Meal, ShoppingItem } from '../../types';
-import { SUGGESTED_TAGS } from '../../lib/constants';
+import { useRecipeOptions } from '../../lib/recipeOptions';
 import { searchMatches, getTodayDateString, oneMonthBefore, formatFrenchDate } from '../../lib/utils';
 import { RecipeModal } from './RecipeModal';
 import { EditRecipeModal } from './EditRecipeModal';
@@ -79,16 +79,17 @@ export const RecipesTab: React.FC<RecipesTabProps> = ({
     }).slice(0, 4);
   }, [recipes, cookingCounts, oneMonthAgoDate]);
 
-  // Collect all available tags across all recipes
+  // Collect all available tags across all recipes  
+  const { tagNames } = useRecipeOptions();
   const allTags = useMemo(() => {
-    const set = new Set<string>(SUGGESTED_TAGS as readonly string[]);
+    const set = new Set<string>(tagNames);
     for (const r of recipes) {
       for (const t of r.tags) {
         set.add(t);
       }
     }
     return Array.from(set);
-  }, [recipes]);
+  }, [recipes, tagNames]);
 
   // Filtered recipes: Accent & Case Insensitive search across name, ingredients, tags
   const filteredRecipes = useMemo(() => {
