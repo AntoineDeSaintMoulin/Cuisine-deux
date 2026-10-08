@@ -62,7 +62,6 @@ export default function App() {
   };
 
   return (
-  return (
     <AislesProvider aisles={aisleNames}>
     <div className="min-h-screen bg-[#FBF6EE] text-[#3E2C23] flex flex-col selection:bg-[#C65D3B]/20 selection:text-[#C65D3B]">
       {/* Top Header */}
