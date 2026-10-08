@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { X, Plus, Trash2, Check, Tag } from 'lucide-react';
 import { Recipe, RecipeIngredient, Aisle } from '../../types';
-import { AISLES, SUGGESTED_TAGS } from '../../lib/constants';
+import { SUGGESTED_TAGS } from '../../lib/constants';
+import { useAisles, defaultAisle, withCurrent } from '../../lib/aisles';
 
 interface IngredientRow {
   id: string;
@@ -33,6 +34,7 @@ export const EditRecipeModal: React.FC<EditRecipeModalProps> = ({
   const [customTagInput, setCustomTagInput] = useState('');
   const [ingredients, setIngredients] = useState<IngredientRow[]>([]);
   const [error, setError] = useState('');
+  const aisles = useAisles();
 
   useEffect(() => {
     if (editingRecipe) {
@@ -45,7 +47,7 @@ export const EditRecipeModal: React.FC<EditRecipeModalProps> = ({
           name: ing.name,
           quantity: ing.quantity !== null && ing.quantity !== undefined ? String(ing.quantity) : '',
           unit: ing.unit || '',
-          aisle: ing.aisle || 'Fruits & légumes',
+          aisle: ing.aisle || defaultAisle(aisles),
         }))
       );
     } else {
@@ -53,8 +55,8 @@ export const EditRecipeModal: React.FC<EditRecipeModalProps> = ({
       setInstructions('');
       setTags(['Rapide']);
       setIngredients([
-        { id: crypto.randomUUID(), name: '', quantity: '', unit: '', aisle: 'Fruits & légumes' },
-        { id: crypto.randomUUID(), name: '', quantity: '', unit: '', aisle: 'Frais & crèmerie' },
+        { id: crypto.randomUUID(), name: '', quantity: '', unit: '', aisle: defaultAisle(aisles) },
+        { id: crypto.randomUUID(), name: '', quantity: '', unit: '', aisle: defaultAisle(aisles) },
       ]);
     }
     setCustomTagInput('');
@@ -81,7 +83,7 @@ export const EditRecipeModal: React.FC<EditRecipeModalProps> = ({
   const addIngredientRow = () => {
     setIngredients((prev) => [
       ...prev,
-      { id: crypto.randomUUID(), name: '', quantity: '', unit: '', aisle: 'Fruits & légumes' },
+      { id: crypto.randomUUID(), name: '', quantity: '', unit: '', aisle: defaultAisle(aisles) },
     ]);
   };
 
@@ -282,7 +284,7 @@ export const EditRecipeModal: React.FC<EditRecipeModalProps> = ({
                       onChange={(e) => updateIngredient(row.id, 'aisle', e.target.value as Aisle)}
                       className="flex-1 sm:w-36 px-2 py-1.5 text-xs rounded-lg border border-[#E8DDD2] bg-[#FBF6EE] focus:outline-none focus:ring-1 focus:ring-[#C65D3B]"
                     >
-                      {AISLES.map((a) => (
+                      {withCurrent(aisles, row.aisle).map((a) => (
                         <option key={a} value={a}>
                           {a}
                         </option>
