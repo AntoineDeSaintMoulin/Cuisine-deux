@@ -8,16 +8,26 @@ import { SupabaseSettingsModal } from './components/SupabaseSettingsModal';
 import { ShoppingTab } from './components/shopping/ShoppingTab';
 import { CalendarTab } from './components/calendar/CalendarTab';
 import { RecipesTab } from './components/recipes/RecipesTab';
+import { ManageCategoriesModal } from './components/shopping/ManageCategoriesModal';
+import { AislesProvider } from './lib/aisles';
 
 // test de déploiement antoine
 
 export default function App() {
   const [currentTab, setCurrentTab] = useState<TabType>('courses');
   const [isSupabaseModalOpen, setIsSupabaseModalOpen] = useState(false);
-  // Recette à planifier : transmise au calendrier, qui ouvre le formulaire avec la recette présélectionnée
+  // Recette à planifier : transmise au calendrier, qui ouvre le formulaire avec la recette présélectionnée  
   const [planRequest, setPlanRequest] = useState<Recipe | null>(null);
+  const [isCategoriesOpen, setIsCategoriesOpen] = useState(false);
 
   const {
+    aisleNames,
+    aisleCategories,
+    aislesTableMissing,
+    addAisle,
+    renameAisle,
+    deleteAisle,
+    moveAisle,
     recipes,
     meals,
     shoppingItems,
@@ -52,6 +62,8 @@ export default function App() {
   };
 
   return (
+  return (
+    <AislesProvider aisles={aisleNames}>
     <div className="min-h-screen bg-[#FBF6EE] text-[#3E2C23] flex flex-col selection:bg-[#C65D3B]/20 selection:text-[#C65D3B]">
       {/* Top Header */}
       <Header
@@ -73,6 +85,7 @@ export default function App() {
             onDeleteItem={deleteShoppingItem}
             onClearChecked={clearCheckedShoppingItems}
             onSwitchToCalendar={() => setCurrentTab('calendrier')}
+            onOpenCategories={() => setIsCategoriesOpen(true)}
           />
         )}
 
@@ -126,6 +139,21 @@ export default function App() {
         onRefresh={reloadFromSupabase}
       />
 
+      {/* Gestion des catégories d'aliments */}
+      <ManageCategoriesModal
+        isOpen={isCategoriesOpen}
+        onClose={() => setIsCategoriesOpen(false)}
+        aisleNames={aisleNames}
+        aisleCategories={aisleCategories}
+        tableMissing={aislesTableMissing}
+        shoppingItems={shoppingItems}
+        recipes={recipes}
+        onAdd={addAisle}
+        onRename={renameAisle}
+        onDelete={deleteAisle}
+        onMove={moveAisle}
+      />
+
       {/* Fixed Bottom Navigation */}
       <BottomNav
         currentTab={currentTab}
@@ -133,5 +161,6 @@ export default function App() {
         shoppingItemsCount={uncheckedShoppingCount}
       />
     </div>
+    </AislesProvider>
   );
 }
