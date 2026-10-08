@@ -13,13 +13,13 @@ const STORAGE_PENDING_QUEUE = 'a_deux_pending_sync_v2';
 const STORAGE_AISLES = 'a_deux_aisles_v1';
 const LEGACY_KEYS = ['a_deux_recipes_v1', 'a_deux_meals_v1', 'a_deux_shopping_v1', 'a_deux_pending_sync_v1'];
 
-type Table = 'recipes' | 'recipe_ingredients' | 'meals' | 'shopping_items' | 'aisles';
+type Table = 'recipes' | 'recipe_ingredients' | 'meals' | 'shopping_items' | 'aisles' | 'tags';
 /**
  * Une opération d'écriture vers Supabase. Toutes les opérations sont rejouables
  * sans effet de bord (upsert, update, delete), ce qui permet de les réessayer
  * sans risque après une coupure réseau.
  */
-type Op =
+export type Op =
   | { kind: 'upsert'; table: Table; rows: any[] }
   | { kind: 'update'; table: Table; id: string; data: any }
   | { kind: 'delete'; table: Table; ids: string[] }
@@ -46,7 +46,7 @@ function writeJson(key: string, value: unknown) {
   }
 }
 
-function readQueue(): Op[] {
+export function readQueue(): Op[] {
   return readJson<Op[]>(STORAGE_PENDING_QUEUE, []);
 }
 
@@ -774,6 +774,8 @@ export function useData() {
     lastSyncTime,
     pendingCount,
     reloadFromSupabase: loadDataFromSupabase,
+    persist,
+    setRecipes,
     addShoppingItem,
     addMultipleShoppingItems,
     toggleShoppingItem,
