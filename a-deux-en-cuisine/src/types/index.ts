@@ -1,14 +1,12 @@
-export type Aisle =
-  | 'Fruits & légumes'
-  | 'Boucherie & poisson'
-  | 'Frais & crèmerie'
-  | 'Boulangerie'
-  | 'Épicerie salée'
-  | 'Épicerie sucrée'
-  | 'Surgelés'
-  | 'Boissons'
-  | 'Hygiène & maison'
-  | 'Autre';
+/** Nom d'une catégorie d'aliments (rayon). Les catégories sont gérées dans l'app. */
+export type Aisle = string;
+
+export interface AisleCategory {
+  id: string;
+  name: string;
+  position: number;
+  created_at?: string;
+}
 
 export type Slot = 'matin' | 'midi' | 'soir';
 
