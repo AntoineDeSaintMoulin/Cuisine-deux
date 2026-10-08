@@ -1,5 +1,6 @@
 import React, { createContext, useContext } from 'react';
 import { SUGGESTED_TAGS } from './constants';
+import type { KnownIngredient } from '../components/recipes/IngredientNameInput';
 
 /** Outils partagés avec l'éditeur de recettes : tags gérés et accès à l'écran des catégories */
 export interface RecipeOptions {
@@ -9,6 +10,8 @@ export interface RecipeOptions {
   deleteTag: (name: string) => void;
   tagUsage: (name: string) => number;
   openCategories: () => void;
+  /** Ingrédients déjà utilisés (recettes + courses), proposés pendant la saisie */
+  knownIngredients: KnownIngredient[];
 }
 
 const RecipeOptionsContext = createContext<RecipeOptions>({
@@ -18,6 +21,7 @@ const RecipeOptionsContext = createContext<RecipeOptions>({
   deleteTag: () => {},
   tagUsage: () => 0,
   openCategories: () => {},
+  knownIngredients: [],
 });
 
 export const RecipeOptionsProvider: React.FC<{ value: RecipeOptions; children: React.ReactNode }> = ({ value, children }) => (
