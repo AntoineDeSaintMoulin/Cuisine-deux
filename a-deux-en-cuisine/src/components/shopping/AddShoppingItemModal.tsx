@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Check, Trash2, Plus } from 'lucide-react';
 import { ShoppingItem, Aisle } from '../../types';
-import { AISLES } from '../../lib/constants';
+import { useAisles, defaultAisle, withCurrent } from '../../lib/aisles';
 
 interface AddShoppingItemModalProps {
   isOpen: boolean;
@@ -20,11 +20,12 @@ export const AddShoppingItemModal: React.FC<AddShoppingItemModalProps> = ({
   onSave,
   onDelete,
   editingItem,
-  defaultAisle,
+  defaultAisle: initialAisle,
 }) => {
   const [name, setName] = useState('');
   const [quantity, setQuantity] = useState('');
-  const [aisle, setAisle] = useState<Aisle>(defaultAisle || 'Fruits & légumes');
+  const aisles = useAisles();
+  const [aisle, setAisle] = useState<Aisle>(initialAisle || defaultAisle(aisles));
   const [note, setNote] = useState('');
   const [error, setError] = useState('');
 
@@ -37,11 +38,11 @@ export const AddShoppingItemModal: React.FC<AddShoppingItemModalProps> = ({
     } else {
       setName('');
       setQuantity('');
-      setAisle(defaultAisle || 'Fruits & légumes');
+      setAisle(initialAisle || defaultAisle(aisles));
       setNote('');
     }
     setError('');
-  }, [editingItem, defaultAisle, isOpen]);
+  }, [editingItem, initialAisle, isOpen]);
 
   if (!isOpen) return null;
 
@@ -143,7 +144,7 @@ export const AddShoppingItemModal: React.FC<AddShoppingItemModalProps> = ({
               onChange={(e) => setAisle(e.target.value as Aisle)}
               className="w-full px-3.5 py-2.5 text-sm rounded-xl bg-white border border-[#E8DDD2] focus:outline-none focus:ring-2 focus:ring-[#C65D3B] text-[#3E2C23]"
             >
-              {AISLES.map((a) => (
+              {withCurrent(aisles, aisle).map((a) => (
                 <option key={a} value={a}>
                   {a}
                 </option>
