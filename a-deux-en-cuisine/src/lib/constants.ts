@@ -1,6 +1,6 @@
 import { Aisle, Slot } from '../types';
 
-export const AISLES: readonly Aisle[] = [
+export const DEFAULT_AISLES: readonly Aisle[] = [
   'Fruits & légumes',
   'Boucherie & poisson',
   'Frais & crèmerie',
@@ -11,7 +11,10 @@ export const AISLES: readonly Aisle[] = [
   'Boissons',
   'Hygiène & maison',
   'Autre',
-] as const;
+];
+
+/** Catégorie de repli : ne peut être ni supprimée ni renommée */
+export const FALLBACK_AISLE: Aisle = 'Autre';
 
 export const SUGGESTED_TAGS = [
   'Rapide',
