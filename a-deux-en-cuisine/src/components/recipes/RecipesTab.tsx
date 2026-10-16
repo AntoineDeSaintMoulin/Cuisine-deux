@@ -111,6 +111,16 @@ export const RecipesTab: React.FC<RecipesTabProps> = ({
 
   return (
     <div className="pb-28 max-w-2xl mx-auto px-4 pt-3 space-y-6">
+      {/* Bandeau photo */}
+      <div className="relative h-28 sm:h-36 rounded-2xl overflow-hidden border border-[#E8DDD2] shadow-xs">
+        <img
+          src="/bon-appetit.webp"
+          alt="Un couple cuisine ensemble"
+          className="w-full h-full object-cover object-[50%_15%]"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#3E2C23]/35 to-transparent" />
+      </div>
+
       {/* Top Title & Add Button */}
       <div className="flex items-center justify-between gap-3">
         <div>
