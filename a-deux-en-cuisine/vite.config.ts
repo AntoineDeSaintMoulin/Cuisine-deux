@@ -44,7 +44,7 @@ export default defineConfig(() => {
           ],
         },
         workbox: {
-          globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2}'],
+          globPatterns: ['**/*.{js,css,html,ico,png,svg,webp,woff,woff2}'],
           // Polices Google mises en cache pour un affichage correct hors ligne
           runtimeCaching: [
             {
