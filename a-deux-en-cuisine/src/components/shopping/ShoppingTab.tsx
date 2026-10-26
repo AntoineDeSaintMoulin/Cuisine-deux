@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Plus, Check, Trash2, ShoppingBasket, Edit2, Sparkles, ChevronDown, Tags } from 'lucide-react';
+import { Plus, Check, Trash2, ShoppingBasket, Edit2, Sparkles, ChevronDown, Tags, RotateCcw } from 'lucide-react';
 import { ShoppingItem, Aisle, Recipe } from '../../types';
 import { useAisles, groupByAisle, defaultAisle, withCurrent } from '../../lib/aisles';
 import { AddShoppingItemModal } from './AddShoppingItemModal';
@@ -13,6 +13,7 @@ interface ShoppingTabProps {
   onUpdateItem: (id: string, updates: Partial<ShoppingItem>) => void;
   onDeleteItem: (id: string) => void;
   onClearChecked: () => void;
+  onClearAll: () => void;
   onSwitchToCalendar: () => void;
   onOpenCategories: () => void;
 }
@@ -25,6 +26,7 @@ export const ShoppingTab: React.FC<ShoppingTabProps> = ({
   onUpdateItem,
   onDeleteItem,
   onClearChecked,
+  onClearAll,
   onSwitchToCalendar,
   onOpenCategories,
 }) => {
@@ -33,6 +35,7 @@ export const ShoppingTab: React.FC<ShoppingTabProps> = ({
   const [editingItem, setEditingItem] = useState<ShoppingItem | null>(null);
   const [selectedAisleForAdd, setSelectedAisleForAdd] = useState<Aisle | undefined>(undefined);
   const [isClearModalOpen, setIsClearModalOpen] = useState(false);
+  const [isResetModalOpen, setIsResetModalOpen] = useState(false);
 
   // Quick inline add state
   const [quickName, setQuickName] = useState('');
@@ -109,6 +112,17 @@ export const ShoppingTab: React.FC<ShoppingTabProps> = ({
           >
             <Trash2 className="w-3.5 h-3.5 text-[#C65D3B]" />
             <span>Vider ({checkedCount})</span>
+          </button>
+        )}
+        {items.length > 0 && (
+          <button
+            onClick={() => setIsResetModalOpen(true)}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#FFFDF9] border border-[#E8DDD2] hover:bg-[#F9EDE8] text-[#3E2C23] text-xs font-semibold transition active:scale-95"
+            title="Réinitialiser la liste de courses"
+            aria-label="Réinitialiser la liste de courses"
+          >
+            <RotateCcw className="w-3.5 h-3.5 text-[#C65D3B]" />
+            <span className="hidden sm:inline">Réinitialiser</span>
           </button>
         )}
         </div>
@@ -377,6 +391,14 @@ export const ShoppingTab: React.FC<ShoppingTabProps> = ({
         onClose={() => setIsClearModalOpen(false)}
         onConfirm={onClearChecked}
         count={checkedCount}
+      />
+
+      <ClearCheckedConfirmModal
+        isOpen={isResetModalOpen}
+        onClose={() => setIsResetModalOpen(false)}
+        onConfirm={onClearAll}
+        count={items.length}
+        variant="all"
       />
     </div>
   );

@@ -500,6 +500,14 @@ export function useData() {
     persist([{ kind: 'delete', table: 'shopping_items', ids }]);
   }, [persist]);
 
+  // Remet la liste de courses à zéro (tous les articles, cochés ou non)
+  const clearAllShoppingItems = useCallback(async () => {
+    const ids = shoppingItemsRef.current.map((i) => i.id);
+    if (ids.length === 0) return;
+    setShoppingItems([]);
+    persist([{ kind: 'delete', table: 'shopping_items', ids }]);
+  }, [persist]);
+
   // ==========================================
   // REPAS
   // ==========================================
@@ -782,6 +790,7 @@ export function useData() {
     updateShoppingItem,
     deleteShoppingItem,
     clearCheckedShoppingItems,
+    clearAllShoppingItems,
     addMeal,
     updateMeal,
     deleteMeal,

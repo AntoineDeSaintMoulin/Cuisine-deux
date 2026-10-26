@@ -6,6 +6,8 @@ interface ClearCheckedConfirmModalProps {
   onClose: () => void;
   onConfirm: () => void;
   count: number;
+  // 'checked' : retire les articles cochés ; 'all' : réinitialise toute la liste
+  variant?: 'checked' | 'all';
 }
 
 export const ClearCheckedConfirmModal: React.FC<ClearCheckedConfirmModalProps> = ({
@@ -13,8 +15,11 @@ export const ClearCheckedConfirmModal: React.FC<ClearCheckedConfirmModalProps> =
   onClose,
   onConfirm,
   count,
+  variant = 'checked',
 }) => {
   if (!isOpen) return null;
+
+  const isReset = variant === 'all';
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs">
@@ -24,10 +29,18 @@ export const ClearCheckedConfirmModal: React.FC<ClearCheckedConfirmModalProps> =
         </div>
 
         <h3 className="text-base font-serif font-bold text-center text-[#3E2C23]">
-          Vider les articles cochés ?
+          {isReset ? 'Réinitialiser la liste de courses ?' : 'Vider les articles cochés ?'}
         </h3>
         <p className="mt-2 text-xs text-[#7E6F65] text-center leading-relaxed">
-          Vous êtes sur le point de retirer définitivement <strong>{count} article{count > 1 ? 's' : ''}</strong> de votre liste de courses.
+          {isReset ? (
+            <>
+              Tous les articles (<strong>{count} article{count > 1 ? 's' : ''}</strong>, cochés ou non) seront supprimés définitivement et la liste repartira de zéro.
+            </>
+          ) : (
+            <>
+              Vous êtes sur le point de retirer définitivement <strong>{count} article{count > 1 ? 's' : ''}</strong> de votre liste de courses.
+            </>
+          )}
         </p>
 
         <div className="mt-5 flex gap-2.5">
@@ -47,7 +60,7 @@ export const ClearCheckedConfirmModal: React.FC<ClearCheckedConfirmModalProps> =
             className="flex-1 py-2.5 rounded-xl bg-[#C65D3B] text-white text-xs font-semibold hover:bg-[#AF4F30] transition shadow-xs flex items-center justify-center gap-1.5"
           >
             <Trash2 className="w-4 h-4" />
-            <span>Vider</span>
+            <span>{isReset ? 'Réinitialiser' : 'Vider'}</span>
           </button>
         </div>
       </div>
