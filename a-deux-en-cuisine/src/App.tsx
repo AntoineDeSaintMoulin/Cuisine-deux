@@ -50,6 +50,7 @@ export default function App() {
     updateShoppingItem,
     deleteShoppingItem,
     clearCheckedShoppingItems,
+    clearAllShoppingItems,
     addMeal,
     updateMeal,
     deleteMeal,
@@ -98,6 +99,7 @@ export default function App() {
             onUpdateItem={updateShoppingItem}
             onDeleteItem={deleteShoppingItem}
             onClearChecked={clearCheckedShoppingItems}
+            onClearAll={clearAllShoppingItems}
             onSwitchToCalendar={() => setCurrentTab('calendrier')}
             onOpenCategories={() => setIsCategoriesOpen(true)}
           />
