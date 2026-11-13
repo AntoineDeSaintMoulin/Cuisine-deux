@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Search, Plus, Sparkles, Clock, Flame, BookHeart, ChefHat, Tag, X } from 'lucide-react';
+import { Search, Plus, Sparkles, Clock, Flame, BookHeart, ChefHat, Tag, X, ChevronDown } from 'lucide-react';
 import { Recipe, Meal, ShoppingItem } from '../../types';
 import { useRecipeOptions } from '../../lib/recipeOptions';
 import { searchMatches, getTodayDateString, oneMonthBefore, formatFrenchDate } from '../../lib/utils';
@@ -36,6 +36,8 @@ export const RecipesTab: React.FC<RecipesTabProps> = ({
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
+  // Section Inspiration repliée par défaut pour gagner de la place
+  const [isInspirationOpen, setIsInspirationOpen] = useState(false);
 
   // Modals
   const [viewingRecipe, setViewingRecipe] = useState<Recipe | null>(null);
@@ -145,13 +147,22 @@ export const RecipesTab: React.FC<RecipesTabProps> = ({
       </div>
 
       {/* SECTION INSPIRATION (en haut de l'onglet) */}
-      <div className="bg-[#FFFDF9] rounded-2xl border border-[#E8DDD2] p-4 space-y-4 shadow-xs">
-        <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#C65D3B]">
-          <Sparkles className="w-4 h-4" />
-          <span>Inspiration Culinaire</span>
-        </div>
+      <div className="bg-[#FFFDF9] rounded-2xl border border-[#E8DDD2] shadow-xs">
+        <button
+          type="button"
+          onClick={() => setIsInspirationOpen((open) => !open)}
+          aria-expanded={isInspirationOpen}
+          className="w-full flex items-center justify-between gap-2 px-4 py-3 text-xs font-bold uppercase tracking-wider text-[#C65D3B] hover:bg-[#FBF6EE]/60 rounded-2xl transition"
+        >
+          <span className="flex items-center gap-2">
+            <Sparkles className="w-4 h-4" />
+            <span>Inspiration Culinaire</span>
+          </span>
+          <ChevronDown className={`w-4 h-4 transition-transform ${isInspirationOpen ? 'rotate-180' : ''}`} />
+        </button>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {isInspirationOpen && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 px-4 pb-4">
           {/* Les plus cuisinées */}
           <div className="space-y-2">
             <h4 className="text-xs font-bold text-[#3E2C23] flex items-center gap-1.5">
@@ -218,6 +229,7 @@ export const RecipesTab: React.FC<RecipesTabProps> = ({
             )}
           </div>
         </div>
+        )}
       </div>
 
       {/* Barre de recherche (accent & case insensitive) */}
